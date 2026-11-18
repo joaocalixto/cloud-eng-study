@@ -7,6 +7,7 @@ Study material for cloud engineering on AWS: hands-on notebooks and quizzes, org
 | Folder | Topic | What is inside |
 |---|---|---|
 | [`iam/`](iam/) | IAM: Identity and Access Management | [`iam-aws-cli-hands-on.ipynb`](iam/iam-aws-cli-hands-on.ipynb), a hands-on lesson using the AWS CLI (users, groups, roles, access keys, MFA, policies, best practices, exercises)<br>[`iam-quiz.html`](iam/iam-quiz.html), a 30-question quiz (20 on the course content + 10 in the style of the AWS Certified Cloud Practitioner exam) |
+| [`global-infrastructure/`](global-infrastructure/) | AWS Global Infrastructure: Regions, AZs, data centers, edge locations and prices | [`global-infrastructure-hands-on.ipynb`](global-infrastructure/global-infrastructure-hands-on.ipynb), a hands-on lesson using the AWS CLI (read-only, creates nothing): Regions, Availability Zones, edge locations, what is global or regional, and why prices change by Region (database example)<br>[`global-infrastructure-quiz.html`](global-infrastructure/global-infrastructure-quiz.html), a 28-question quiz (20 on the course content + 8 in the style of the AWS Certified Cloud Practitioner exam) |
 
 ## Before you start
 

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AWS Global Infrastructure Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: calm and direct, like a well-made exam; short, simple sentences.
+IDEA: a measuring instrument: a ruler with one mark per question that fills up.
+PICTURE: the question itself, with the progress ruler above it.
+COLOUR and TYPE: light aluminium, black, orange pointer; Geist 500 + Geist.
+LAYOUT: wide ruler at the top, score readout above it, question and answers in one column.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#e9eaec,#141517);--card:light-dark(#f7f7f8,#1d1f22);--ink:light-dark(#111214,#eceef1);
+--mute:light-dark(#5d6168,#9aa0a8);--line:light-dark(#c9cbcf,#33363b);--acc:#ff4f00;
+--ok:light-dark(#0f6e4c,#4cc796);--okbg:light-dark(#dff1e8,#14332a);--bad:light-dark(#b42318,#ff7a6e);--badbg:light-dark(#fbe3e0,#3a1d1a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Geist,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:820px;margin:0 auto}
+h1{font-weight:500;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--mute);margin:0}
+.read{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:28px 0 10px;flex-wrap:wrap}
+.read b{font:500 clamp(28px,4vw,40px)/1 "Geist Mono",monospace}
+.read span{color:var(--mute);font-size:15px}
+.scale{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:4px;height:34px;align-items:end}
+.tick{height:18px;background:var(--line);border-radius:2px;position:relative;transition:height .25s}
+.tick.cur{height:34px;background:var(--acc)}
+.tick.ok{background:var(--ok)}.tick.bad{background:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,3.5vw,36px);margin-top:22px}
+.tag{font-size:14px;color:var(--mute);margin:0 0 10px}
+.q{font-weight:500;font-size:clamp(21px,2.8vw,27px);line-height:1.25;margin:0 0 22px;text-wrap:balance}
+.opts{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.opt{width:100%;min-height:52px;text-align:left;font:inherit;color:inherit;background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;gap:14px;align-items:center}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.opt .k{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:500 14px "Geist Mono",monospace;color:var(--mute)}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}.opt.ok .k{border-color:var(--ok);color:var(--ok)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}.opt.bad .k{border-color:var(--bad);color:var(--bad)}
+.why{margin:20px 0 0;padding:14px 16px;border-radius:10px;background:var(--bg);display:none}
+.why.on{display:block}.why strong{display:block;margin-bottom:4px}
+.row{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.btn{min-height:46px;padding:10px 22px;border-radius:10px;font:500 16px Geist,sans-serif;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn[hidden]{display:none}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.modes .btn{min-height:40px;padding:8px 14px;font-size:15px}.modes .btn.on{background:var(--ink);color:var(--bg)}
+.hint{color:var(--mute);font-size:14px;margin:14px 0 0}
+.big{font:500 clamp(56px,10vw,96px)/1 "Geist Mono",monospace;margin:4px 0 8px}
+.bars{display:grid;gap:12px;margin:22px 0}
+.bar{display:grid;grid-template-columns:minmax(0,15em) minmax(0,1fr) 3.5em;gap:12px;align-items:center;font-size:15px}
+.bar i{display:block;height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i u{display:block;height:100%;background:var(--acc)}
+.bar em{font-style:normal;text-align:right;font-family:"Geist Mono",monospace;white-space:nowrap}
+.miss{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.miss li{border-top:1px solid var(--line);padding-top:12px}
+.miss p{margin:2px 0;color:var(--mute);font-size:15px}
+@media(max-width:600px){.bar{grid-template-columns:minmax(0,1fr) 3.5em}.bar i{grid-column:1/-1;order:3}.scale{gap:2px}.modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.modes .btn{min-height:40px;padding:8px 14px;font-size:15px}.modes .btn.on{background:var(--ink);color:var(--bg)}
+.hint{display:none}}
+@media(prefers-reduced-motion:reduce){.tick{transition:none}}
+</style>
+</head>
+<body>
+<main class="band"><div class="wrap">
+  <h1>Quiz: AWS Global Infrastructure</h1>
+  <p class="sub">Questions about how AWS is built around the world: Regions, Availability Zones, data centers, edge locations and why prices change, plus questions in the style of the AWS Certified Cloud Practitioner exam.</p>
+  <div class="modes" id="modes"><button class="btn ghost on" data-m="all">All (28)</button><button class="btn ghost" data-m="course">Course (20)</button><button class="btn ghost" data-m="cert">Cloud Practitioner style (8)</button></div>
+  <div class="read"><div><span>Question</span><br><b id="pos">1/28</b></div><div style="text-align:right"><span>Correct</span><br><b id="pts">0</b></div></div>
+  <div class="scale" id="scale" aria-hidden="true"></div>
+  <section class="card" id="stage" aria-live="polite"></section>
+</div></main>
+<script>
+{
+const Q=[
+{t:"Regions",q:"What is an AWS Region?",o:["A place in the world where AWS has several Availability Zones","A single data center building","A small site that keeps copies of files near users","A type of AWS account"],a:0,e:"A Region is a geographic area, like Ireland or São Paulo. Inside it there are several Availability Zones."},
+{t:"Regions",q:"What is the smallest number of Availability Zones in a Region?",o:["At least three","Exactly one","Exactly two","Always ten"],a:0,e:"Each Region has at least three AZs. That is what lets you build apps that keep running when one AZ has a problem."},
+{t:"Regions",q:"Does AWS copy your data from one Region to another by itself?",o:["No. Regions are independent, so data only moves if you set it up","Yes, every Region keeps a copy of everything","Yes, but only for databases","Yes, but only between Regions on the same continent"],a:0,e:"Regions are isolated from each other. Your data stays in the Region you chose until you decide to copy it."},
+{t:"Regions",q:"Which Region code belongs to Europe (Ireland)?",o:["eu-west-1","eu-central-1","us-east-1","sa-east-1"],a:0,e:"eu-west-1 is Ireland. eu-central-1 is Frankfurt, us-east-1 is N. Virginia and sa-east-1 is São Paulo."},
+{t:"AZs and data centers",q:"What is an Availability Zone made of?",o:["One or more data centers","Exactly one server","One edge location","One AWS account"],a:0,e:"An AZ is a group of one or more data centers with their own power, cooling and network."},
+{t:"AZs and data centers",q:"Why does AWS keep AZs far enough apart from each other?",o:["So one problem, like a fire or a power cut, does not hit two AZs","To make the internet slower on purpose","So each AZ can use a different currency","Because the law forbids two AZs in one city"],a:0,e:"The distance is a safety measure. If one AZ fails, the others should keep working."},
+{t:"AZs and data centers",q:"Why does AWS keep AZs close enough to each other?",o:["So a very fast network can connect them with almost no delay","To share the same power cable","To save money on land","So customers can visit them"],a:0,e:"Close AZs let your servers talk to each other quickly, which makes it practical to spread an app over several AZs."},
+{t:"AZs and data centers",q:"Two companies both see an AZ called eu-west-1a. How can they be sure they mean the same physical place?",o:["Compare the AZ ID (like euw1-az1)","Compare the Region code only","Compare the account numbers","They cannot compare it in any way"],a:0,e:"The AZ ID always points to the same physical place. In older accounts the name (like eu-west-1a) can point to different places."},
+{t:"AZs and data centers",q:"Can you choose one specific data center to run your server in?",o:["No. The smallest place you can choose is the AZ","Yes, in the console under Data centers","Yes, but only with the root user","Yes, with the CLI command describe-datacenters"],a:0,e:"AWS does not show or let you pick data centers. You choose a Region and an AZ."},
+{t:"Edge locations",q:"What is an edge location?",o:["A small AWS site close to users that keeps copies of content","A second name for an Availability Zone","The biggest data center of a Region","A special type of server"],a:0,e:"Edge locations are spread around the world. They keep copies (a cache) so files reach users faster."},
+{t:"Edge locations",q:"Where do edge locations sit?",o:["Outside the Regions and the AZs","Inside every AZ","Only inside the N. Virginia Region","Inside your own account"],a:0,e:"They are a separate network of small sites. That is why they never show up when you list AZs."},
+{t:"Edge locations",q:"A photo is already cached. A user in Lisbon asks for it. Where does it come from?",o:["From the nearest edge location","From the Region on the other side of the world","From the user's own computer","From the root user's account"],a:0,e:"A cache hit is answered by the edge location close to the user, which is the whole point of a cache."},
+{t:"Edge locations",q:"A user asks for a file that the nearest edge location does not have yet. What happens?",o:["The edge location gets it from the origin and keeps a copy for next time","The user gets an error and must try again tomorrow","AWS deletes the file","The request is sent to a random AZ and forgotten"],a:0,e:"This is a cache miss. Only the first request is slow. The next ones are answered from the copy."},
+{t:"Global, regional or one AZ",q:"Which of these is a global service?",o:["IAM","EC2","A subnet","An EBS disk"],a:0,e:"IAM users, groups, roles and policies apply to the whole account, in every Region."},
+{t:"Global, regional or one AZ",q:"A subnet (a piece of your private network) belongs to…",o:["One single AZ","The whole world","Every AZ of the Region","An edge location"],a:0,e:"A subnet lives in one AZ. To survive the loss of an AZ, create subnets in more than one."},
+{t:"Global, regional or one AZ",q:"An EC2 server (a virtual computer) runs in…",o:["One single AZ","All AZs of the Region at the same time","One edge location","Every Region"],a:0,e:"An EC2 instance is tied to the AZ where it was launched. For safety you run more than one, in different AZs."},
+{t:"Price and choice",q:"In the prices we compared, which Region was the cheapest for the same database?",o:["US East (N. Virginia)","South America (São Paulo)","Europe (Frankfurt)","US West (N. California)"],a:0,e:"N. Virginia (and Oregon) were the cheapest. São Paulo was about double. Prices change, so check calculator.aws."},
+{t:"Price and choice",q:"About how much more did the same database cost in São Paulo than in N. Virginia?",o:["About double","About the same","About 10% less","About ten times more"],a:0,e:"The small and the medium database both cost around twice as much in São Paulo. The difference in dollars grows with the size."},
+{t:"Price and choice",q:"A database has a standby copy in a second AZ (Multi-AZ). Roughly how does the price change?",o:["It is about double","It is free","It is about 10% cheaper","It does not change"],a:0,e:"You pay for the main database and for the standby copy, so the price is about twice as much."},
+{t:"Price and choice",q:"Which of these is NOT a good reason to choose a Region?",o:["The name of the Region is easy to remember","It is close to your users","The law says the data must stay in that country","It has the services you need"],a:0,e:"Good reasons: users nearby, legal rules about where data stays, the services you need, and the price."},
+{t:"Cloud Practitioner style",q:"A company wants its application to keep running even if one data center fails. What is the best approach?",o:["Run the application in more than one Availability Zone","Run the application on a bigger server","Run the application in a single Availability Zone","Run the application only on the company's laptops"],a:0,e:"Spreading across AZs is the basic way to get high availability in AWS."},
+{t:"Cloud Practitioner style",q:"Which statement describes an AWS Region?",o:["A separate geographic area that contains multiple Availability Zones","A single building that contains one server room","A group of edge locations that only delivers content","A billing group inside an AWS account"],a:0,e:"A Region is a geographic area. It is made of several Availability Zones, which are made of data centers."},
+{t:"Cloud Practitioner style",q:"Which AWS service uses edge locations to deliver content to users with low delay?",o:["Amazon CloudFront","Amazon RDS","AWS Backup","Amazon EBS"],a:0,e:"CloudFront is the content delivery network. It keeps cached copies in edge locations near the users."},
+{t:"Cloud Practitioner style",q:"A company must keep its customer data inside Germany because of a law. Which factor is the company thinking about when it chooses a Region?",o:["Data residency and compliance","Network speed between AZs","The size of the company","The number of AWS employees"],a:0,e:"Some laws say where data must stay. This is one of the main factors when choosing a Region."},
+{t:"Cloud Practitioner style",q:"Which statement about an Availability Zone is true?",o:["It consists of one or more discrete data centers with redundant power and networking","It is always exactly one server","It is a place where only AWS employees can sign in","It is the same thing as an edge location"],a:0,e:"An AZ is made of one or more data centers, each AZ with its own power, cooling and network."},
+{t:"Cloud Practitioner style",q:"Under the shared responsibility model, who is responsible for the physical security of AWS data centers?",o:["AWS","The customer","The customer's internet provider","Both equally"],a:0,e:"AWS looks after the security of the cloud (buildings, hardware). The customer looks after security in the cloud (data, users, permissions)."},
+{t:"Cloud Practitioner style",q:"Which is a benefit of the AWS global infrastructure?",o:["You can deploy applications close to your users to lower the delay","You can only use one Region at a time","AWS data centers are visible in the console","All Regions have exactly the same price"],a:0,e:"With many Regions and edge locations you can place your app near your users. Prices also differ from Region to Region."},
+{t:"Cloud Practitioner style",q:"A company wants to run AWS infrastructure inside its own data center. Which offering fits best?",o:["AWS Outposts","Amazon CloudFront","AWS Local Zones","Amazon Route 53"],a:0,e:"Outposts puts AWS infrastructure in the customer's own building. Local Zones are AWS sites in big cities, still run by AWS."},
+];
+const S=[...new Set(Q.map(x=>x.t))];
+const $=id=>document.getElementById(id);
+const stage=$("stage"),scale=$("scale");
+let order,i,res,picked,shuf;
+
+function shuffle(a){a=[...a];for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+
+function start(list){order=list;i=0;res={};render()}
+
+function drawScale(){
+  scale.style.gridTemplateColumns=`repeat(${order.length},minmax(0,1fr))`;
+  scale.innerHTML=order.map((n,k)=>`<div class="tick ${k===i&&i<order.length?'cur':''} ${res[n]===true?'ok':res[n]===false?'bad':''}"></div>`).join('');
+  $("pos").textContent=`${Math.min(i+1,order.length)}/${order.length}`;
+  $("pts").textContent=Object.values(res).filter(Boolean).length;
+}
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function render(){
+  drawScale();
+  if(i>=order.length)return finish();
+  const n=order[i],x=Q[n];picked=null;
+  shuf=shuffle(x.o.map((t,k)=>({t,k})));
+  stage.innerHTML=`<p class="tag">${esc(x.t)}</p>
+  <h2 class="q">${esc(x.q)}</h2>
+  <ul class="opts">${shuf.map((o,k)=>`<li><button class="opt" data-k="${k}"><span class="k">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button></li>`).join('')}</ul>
+  <div class="why" id="why"></div>
+  <div class="row"><button class="btn" id="next" hidden>${i===order.length-1?'See result':'Next'}</button></div>
+  <p class="hint">Shortcuts: press A, B, C or D to answer and Enter to continue.</p>`;
+  stage.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answer(+b.dataset.k)));
+  $("next").addEventListener("click",()=>{i++;render();stage.querySelector(".opt,.btn")?.focus()});
+}
+
+function answer(k){
+  if(picked!==null)return;picked=k;
+  const n=order[i],x=Q[n],right=shuf[k].k===x.a;res[n]=right;
+  stage.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(shuf[j].k===x.a)b.classList.add("ok");else if(j===k)b.classList.add("bad")});
+  const w=$("why");w.innerHTML=`<strong>${right?"Correct!":"Not this time."}</strong>${esc(x.e)}`;w.classList.add("on");
+  const nx=$("next");nx.hidden=false;nx.focus();
+  drawScale();
+}
+
+function finish(){
+  const tot=order.length,ok=Object.values(res).filter(Boolean).length,pct=Math.round(ok/tot*100);
+  const msg=pct>=90?"Excellent! You know the AWS map.":pct>=70?"Very good. Just review the ones you missed.":pct>=50?"Good start. Re-read the parts you got wrong.":"Room to improve. Review the material and try again.";
+  const wrong=order.filter(n=>res[n]===false);
+  const bars=S.map(s=>{const qs=order.filter(n=>Q[n].t===s);if(!qs.length)return'';const c=qs.filter(n=>res[n]).length;
+    return `<div class="bar"><span>${s}</span><i><u style="width:${c/qs.length*100}%"></u></i><em>${c}/${qs.length}</em></div>`}).join('');
+  stage.innerHTML=`<p class="tag">Result</p>
+  <div class="big">${ok}/${tot}</div><p style="margin:0">${msg}</p>
+  <div class="bars">${bars}</div>
+  ${wrong.length?`<h2 class="q" style="font-size:20px;margin:24px 0 4px">Right answers for the ones you missed</h2>
+  <ul class="miss">${wrong.map(n=>`<li><strong>${esc(Q[n].q)}</strong><p>Answer: ${esc(Q[n].o[Q[n].a])}</p><p>${esc(Q[n].e)}</p></li>`).join('')}</ul>`:''}
+  <div class="row">${wrong.length?'<button class="btn ghost" id="redo">Retry only the ones I missed</button>':''}<button class="btn" id="again">Start over</button></div>`;
+  $("again").addEventListener("click",()=>start(pool()));
+  if(wrong.length)$("redo").addEventListener("click",()=>start(wrong));
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const k="abcd".indexOf(e.key.toLowerCase());
+  if(k>=0&&i<order.length&&picked===null&&k<shuf.length){answer(k);e.preventDefault()}
+});
+
+let mode="all";
+function pool(){return Q.map((_,k)=>k).filter(k=>mode==="all"||(mode==="cert")===(Q[k].t==="Cloud Practitioner style"))}
+document.querySelectorAll("#modes .btn").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.m;document.querySelectorAll("#modes .btn").forEach(x=>x.classList.toggle("on",x===b));start(pool())}));
+start(pool());
+}
+</script>
+</body>
+</html>
