@@ -23,7 +23,7 @@ The easiest way.
 
 1. Open <https://colab.research.google.com>.
 2. **File → Upload notebook** and pick `iam/iam-aws-cli-hands-on.ipynb`.
-   (Or **File → Open notebook → GitHub** and paste this repository's URL.)
+   Or open it directly: <https://colab.research.google.com/github/joaocalixto/cloud-eng-study/blob/main/iam/iam-aws-cli-hands-on.ipynb>
 3. Run the cells in order with **Shift + Enter**. The first cell installs the AWS CLI for you.
 4. When asked, paste your access key ID and secret access key into the hidden boxes.
 
@@ -72,7 +72,7 @@ Check it (open a **new** terminal first): `aws --version`
 ### 4. Get the project and create a virtual environment
 
 ```bash
-git clone https://github.com/<your-user>/cloud-eng-study.git
+git clone https://github.com/joaocalixto/cloud-eng-study.git
 cd cloud-eng-study
 
 python3 -m venv .venv
