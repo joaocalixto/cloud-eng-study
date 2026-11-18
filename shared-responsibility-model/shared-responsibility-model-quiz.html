@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AWS Shared Responsibility Model Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: calm and direct, like a well-made exam; short, simple sentences.
+IDEA: a measuring instrument: a ruler with one mark per question that fills up.
+PICTURE: the question itself, with the progress ruler above it.
+COLOUR and TYPE: light aluminium, black, orange pointer; Geist 500 + Geist.
+LAYOUT: wide ruler at the top, score readout above it, question and answers in one column.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#e9eaec,#141517);--card:light-dark(#f7f7f8,#1d1f22);--ink:light-dark(#111214,#eceef1);
+--mute:light-dark(#5d6168,#9aa0a8);--line:light-dark(#c9cbcf,#33363b);--acc:#ff4f00;
+--ok:light-dark(#0f6e4c,#4cc796);--okbg:light-dark(#dff1e8,#14332a);--bad:light-dark(#b42318,#ff7a6e);--badbg:light-dark(#fbe3e0,#3a1d1a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Geist,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:820px;margin:0 auto}
+h1{font-weight:500;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--mute);margin:0}
+.read{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:28px 0 10px;flex-wrap:wrap}
+.read b{font:500 clamp(28px,4vw,40px)/1 "Geist Mono",monospace}
+.read span{color:var(--mute);font-size:15px}
+.scale{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:4px;height:34px;align-items:end}
+.tick{height:18px;background:var(--line);border-radius:2px;position:relative;transition:height .25s}
+.tick.cur{height:34px;background:var(--acc)}
+.tick.ok{background:var(--ok)}.tick.bad{background:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,3.5vw,36px);margin-top:22px}
+.tag{font-size:14px;color:var(--mute);margin:0 0 10px}
+.q{font-weight:500;font-size:clamp(21px,2.8vw,27px);line-height:1.25;margin:0 0 22px;text-wrap:balance}
+.opts{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.opt{width:100%;min-height:52px;text-align:left;font:inherit;color:inherit;background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;gap:14px;align-items:center}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.opt .k{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:500 14px "Geist Mono",monospace;color:var(--mute)}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}.opt.ok .k{border-color:var(--ok);color:var(--ok)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}.opt.bad .k{border-color:var(--bad);color:var(--bad)}
+.why{margin:20px 0 0;padding:14px 16px;border-radius:10px;background:var(--bg);display:none}
+.why.on{display:block}.why strong{display:block;margin-bottom:4px}
+.row{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.btn{min-height:46px;padding:10px 22px;border-radius:10px;font:500 16px Geist,sans-serif;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn[hidden]{display:none}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.modes .btn{min-height:40px;padding:8px 14px;font-size:15px}.modes .btn.on{background:var(--ink);color:var(--bg)}
+.hint{color:var(--mute);font-size:14px;margin:14px 0 0}
+.big{font:500 clamp(56px,10vw,96px)/1 "Geist Mono",monospace;margin:4px 0 8px}
+.bars{display:grid;gap:12px;margin:22px 0}
+.bar{display:grid;grid-template-columns:minmax(0,15em) minmax(0,1fr) 3.5em;gap:12px;align-items:center;font-size:15px}
+.bar i{display:block;height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i u{display:block;height:100%;background:var(--acc)}
+.bar em{font-style:normal;text-align:right;font-family:"Geist Mono",monospace;white-space:nowrap}
+.miss{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.miss li{border-top:1px solid var(--line);padding-top:12px}
+.miss p{margin:2px 0;color:var(--mute);font-size:15px}
+@media(max-width:600px){.bar{grid-template-columns:minmax(0,1fr) 3.5em}.bar i{grid-column:1/-1;order:3}.scale{gap:2px}.modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.modes .btn{min-height:40px;padding:8px 14px;font-size:15px}.modes .btn.on{background:var(--ink);color:var(--bg)}
+.hint{display:none}}
+@media(prefers-reduced-motion:reduce){.tick{transition:none}}
+</style>
+</head>
+<body>
+<main class="band"><div class="wrap">
+  <h1>Quiz: AWS Shared Responsibility Model</h1>
+  <p class="sub">Questions about who secures what in the cloud: the AWS side, your side, how it changes with the service, and proof of compliance, plus questions in the style of the AWS Certified Cloud Practitioner exam.</p>
+  <div class="modes" id="modes"><button class="btn ghost on" data-m="all">All (28)</button><button class="btn ghost" data-m="course">Course (20)</button><button class="btn ghost" data-m="cert">Cloud Practitioner style (8)</button></div>
+  <div class="read"><div><span>Question</span><br><b id="pos">1/28</b></div><div style="text-align:right"><span>Correct</span><br><b id="pts">0</b></div></div>
+  <div class="scale" id="scale" aria-hidden="true"></div>
+  <section class="card" id="stage" aria-live="polite"></section>
+</div></main>
+<script>
+{
+const Q=[
+{t:"The big idea",q:"What does the Shared Responsibility Model say?",o:["AWS and the customer each take care of different parts of security","AWS is responsible for all security, always","The customer is responsible for all security, always","Only customers with a paid support plan share responsibility"],a:0,e:"Security is split. AWS protects the cloud itself. You protect what you put in it and how you set it up."},
+{t:"The big idea",q:"What does \"security OF the cloud\" mean?",o:["AWS protects the infrastructure that all services run on","You protect your own passwords and data","You choose the rules of your firewall","AWS reads your data to keep it safe"],a:0,e:"\"Of the cloud\" is the base: buildings, hardware, network and the software that runs virtual machines. That is AWS's job."},
+{t:"The big idea",q:"What does \"security IN the cloud\" mean?",o:["You protect what you put in AWS and how you configure it","AWS protects the data centers","AWS replaces broken servers","AWS updates the hypervisor"],a:0,e:"\"In the cloud\" is your part: your data, your access rules, your settings and your own software."},
+{t:"The big idea",q:"In the apartment building comparison, AWS is the building. Who must lock the door of YOUR apartment?",o:["You, the customer","The building owner, AWS","Both, in equal parts, for every door","Nobody. The door locks itself"],a:0,e:"AWS keeps the building safe. Your apartment, with your things inside, is your part. An open door is your problem."},
+{t:"AWS side (of the cloud)",q:"Who is responsible for the physical security of AWS data centers (guards, cameras, entry control)?",o:["AWS","The customer","The customer's internet provider","Whoever uses the data center the most"],a:0,e:"Buildings and the people who guard them are always AWS's part."},
+{t:"AWS side (of the cloud)",q:"Who replaces a broken hard disk or server in an AWS data center?",o:["AWS","The customer who uses that server","AWS Support, only when you open a ticket and pay for it","The customer's IT team"],a:0,e:"Hardware is part of security and care of the cloud itself. You never touch it."},
+{t:"AWS side (of the cloud)",q:"Who is responsible for the software layer that runs virtual machines on the physical servers (the hypervisor)?",o:["AWS","The customer","Both, but only for Linux servers","The company that made the operating system"],a:0,e:"The hypervisor sits below your servers. AWS runs and updates it, and you cannot even see it."},
+{t:"AWS side (of the cloud)",q:"Which of these does AWS take care of for you?",o:["Power, cooling and network cables of the data centers","The passwords of your IAM users","The rules of your Security Groups","The updates of the operating system on your EC2 servers"],a:0,e:"Facilities are AWS's job. Passwords, firewall rules and your server's OS are in your part."},
+{t:"AWS side (of the cloud)",q:"When AWS stops using an old storage device, who makes sure the data on it cannot be recovered?",o:["AWS","The customer who stored the data","The device's maker","Nobody. The data stays on the device"],a:0,e:"AWS handles the full life of its hardware, including destroying old devices in a safe way."},
+{t:"Your side (in the cloud)",q:"Who installs security updates on the operating system of an Amazon EC2 server?",o:["The customer","AWS, automatically","The company that made the operating system","Nobody. EC2 updates by itself"],a:0,e:"On EC2 you manage the guest operating system. That includes its updates."},
+{t:"Your side (in the cloud)",q:"Who decides who can read the files in an Amazon S3 bucket?",o:["The customer","AWS","The Region where the bucket is","Any user with an AWS account"],a:0,e:"Access to your data is always your decision. You set it with IAM and bucket policies."},
+{t:"Your side (in the cloud)",q:"A company leaves an S3 bucket public by mistake and customer data leaks. Whose responsibility is this setting?",o:["The customer's","AWS's","The Region's","The internet provider's"],a:0,e:"Who can access a bucket is a setting on the customer's side. AWS gives safety switches, but you hold them."},
+{t:"Your side (in the cloud)",q:"Who is responsible for turning on MFA for IAM users?",o:["The customer","AWS, when the account is created","The root user's bank","Nobody. MFA is always on"],a:0,e:"AWS offers MFA, but you must turn it on and ask your users to use it."},
+{t:"Your side (in the cloud)",q:"Who decides which ports are open in a Security Group?",o:["The customer","AWS","The operating system","The Availability Zone"],a:0,e:"A Security Group is your firewall. You write its rules."},
+{t:"Your side (in the cloud)",q:"AWS offers tools to encrypt data. Who decides to use them?",o:["The customer","AWS, for every customer","The AWS Region","The data center staff"],a:0,e:"AWS gives you the tools. Deciding to use them, and who can use the keys, is on your side."},
+{t:"Changes by service",q:"With Amazon RDS, who applies updates to the operating system of the database server?",o:["AWS","The customer, by logging in to the server","The customer's cloud provider","Nobody"],a:0,e:"RDS is managed. AWS patches the operating system and the database software. You choose the maintenance window."},
+{t:"Changes by service",q:"With AWS Lambda, which of these is still the customer's responsibility?",o:["Their code and the permissions given to it","The operating system of the servers","The updates of the language runtime","The physical servers"],a:0,e:"Lambda removes servers from your list. Your code, its IAM permissions and your data stay with you."},
+{t:"Changes by service",q:"Which of these services gives the customer the MOST security work?",o:["Amazon EC2","AWS Lambda","Amazon S3","Amazon DynamoDB"],a:0,e:"With EC2 you manage the operating system, the firewall and your apps. The others are more managed, so more is done by AWS."},
+{t:"Proof and compliance",q:"Patch management is a \"shared control\". Which description is right?",o:["AWS patches the cloud infrastructure. The customer patches their own guest OS and applications","AWS patches everything, including the customer's applications","The customer patches everything, including the AWS hardware","Nobody has to patch in the cloud"],a:0,e:"Both sides have a patching job, each on their own layer."},
+{t:"Proof and compliance",q:"AWS has many security certificates. What does this mean for your own application?",o:["You still need to set up your own side correctly","Your application is automatically certified too","You no longer need to use IAM","You can leave your S3 buckets public"],a:0,e:"AWS's certificates cover AWS's part. Your configuration, access rules and data are yours to protect."},
+{t:"Cloud Practitioner style",q:"A company runs a web application on Amazon EC2 instances. Under the shared responsibility model, which task belongs to the company?",o:["Applying security patches to the operating system of the instances","Replacing failed hardware in the data center","Controlling who can enter the data center","Updating the hypervisor"],a:0,e:"The guest operating system on EC2 is managed by the customer. The other three are AWS's."},
+{t:"Cloud Practitioner style",q:"Which statement describes an AWS responsibility?",o:["Protecting the hardware, software, network and facilities that run AWS Cloud services","Managing the IAM users of each customer","Setting the firewall rules of each customer","Choosing which customer data to encrypt"],a:0,e:"AWS is responsible for the infrastructure that runs the services. Users, firewall rules and data choices are the customer's."},
+{t:"Cloud Practitioner style",q:"A company stores files in Amazon S3 and wants to be sure the public cannot read them. Who is responsible for configuring the bucket permissions?",o:["The company","AWS","AWS Support","The Region's data center staff"],a:0,e:"Access settings of your own resources are customer configuration."},
+{t:"Cloud Practitioner style",q:"A company uses Amazon RDS for its databases. Which task is an AWS responsibility?",o:["Patching the operating system of the database host","Deciding which users can read the data","Choosing which IP addresses can connect","Deciding how long backups are kept"],a:0,e:"RDS is a managed service. AWS patches the host and the database software. Access, network rules and retention are the customer's choice."},
+{t:"Cloud Practitioner style",q:"Which responsibility stays with the customer no matter which AWS service is used?",o:["Their data and who can access it","Physical security of the data center","Maintenance of the hypervisor","Maintenance of the global network"],a:0,e:"More managed services move work to AWS, but your data and your access rules always stay with you."},
+{t:"Cloud Practitioner style",q:"A company must show an auditor how AWS protects its data centers. Where can it download AWS audit reports and certificates on demand?",o:["AWS Artifact","Amazon CloudFront","AWS Lambda","Amazon Route 53"],a:0,e:"AWS Artifact is a free portal with AWS's compliance reports and certificates."},
+{t:"Cloud Practitioner style",q:"A company moves from running its own servers on EC2 to a fully managed AWS service. What happens to its security responsibilities?",o:["Some move to AWS, but protecting data and access always stays with the company","All of them move to AWS","None of them change","They all move to the company"],a:0,e:"The more AWS manages, the shorter your list. It never becomes empty."},
+{t:"Cloud Practitioner style",q:"Which statement about the shared responsibility model is TRUE?",o:["The split of responsibilities depends on the AWS services the customer uses","It only applies to Amazon EC2","AWS is responsible for the security of customer data","It only applies to customers with Enterprise Support"],a:0,e:"It applies to every service. How the work is split changes with the service."},
+];
+const S=[...new Set(Q.map(x=>x.t))];
+const $=id=>document.getElementById(id);
+const stage=$("stage"),scale=$("scale");
+let order,i,res,picked,shuf;
+
+function shuffle(a){a=[...a];for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+
+function start(list){order=list;i=0;res={};render()}
+
+function drawScale(){
+  scale.style.gridTemplateColumns=`repeat(${order.length},minmax(0,1fr))`;
+  scale.innerHTML=order.map((n,k)=>`<div class="tick ${k===i&&i<order.length?'cur':''} ${res[n]===true?'ok':res[n]===false?'bad':''}"></div>`).join('');
+  $("pos").textContent=`${Math.min(i+1,order.length)}/${order.length}`;
+  $("pts").textContent=Object.values(res).filter(Boolean).length;
+}
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function render(){
+  drawScale();
+  if(i>=order.length)return finish();
+  const n=order[i],x=Q[n];picked=null;
+  shuf=shuffle(x.o.map((t,k)=>({t,k})));
+  stage.innerHTML=`<p class="tag">${esc(x.t)}</p>
+  <h2 class="q">${esc(x.q)}</h2>
+  <ul class="opts">${shuf.map((o,k)=>`<li><button class="opt" data-k="${k}"><span class="k">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button></li>`).join('')}</ul>
+  <div class="why" id="why"></div>
+  <div class="row"><button class="btn" id="next" hidden>${i===order.length-1?'See result':'Next'}</button></div>
+  <p class="hint">Shortcuts: press A, B, C or D to answer and Enter to continue.</p>`;
+  stage.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answer(+b.dataset.k)));
+  $("next").addEventListener("click",()=>{i++;render();stage.querySelector(".opt,.btn")?.focus()});
+}
+
+function answer(k){
+  if(picked!==null)return;picked=k;
+  const n=order[i],x=Q[n],right=shuf[k].k===x.a;res[n]=right;
+  stage.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(shuf[j].k===x.a)b.classList.add("ok");else if(j===k)b.classList.add("bad")});
+  const w=$("why");w.innerHTML=`<strong>${right?"Correct!":"Not this time."}</strong>${esc(x.e)}`;w.classList.add("on");
+  const nx=$("next");nx.hidden=false;nx.focus();
+  drawScale();
+}
+
+function finish(){
+  const tot=order.length,ok=Object.values(res).filter(Boolean).length,pct=Math.round(ok/tot*100);
+  const msg=pct>=90?"Excellent! You know who does what.":pct>=70?"Very good. Just review the ones you missed.":pct>=50?"Good start. Re-read the parts you got wrong.":"Room to improve. Review the material and try again.";
+  const wrong=order.filter(n=>res[n]===false);
+  const bars=S.map(s=>{const qs=order.filter(n=>Q[n].t===s);if(!qs.length)return'';const c=qs.filter(n=>res[n]).length;
+    return `<div class="bar"><span>${s}</span><i><u style="width:${c/qs.length*100}%"></u></i><em>${c}/${qs.length}</em></div>`}).join('');
+  stage.innerHTML=`<p class="tag">Result</p>
+  <div class="big">${ok}/${tot}</div><p style="margin:0">${msg}</p>
+  <div class="bars">${bars}</div>
+  ${wrong.length?`<h2 class="q" style="font-size:20px;margin:24px 0 4px">Right answers for the ones you missed</h2>
+  <ul class="miss">${wrong.map(n=>`<li><strong>${esc(Q[n].q)}</strong><p>Answer: ${esc(Q[n].o[Q[n].a])}</p><p>${esc(Q[n].e)}</p></li>`).join('')}</ul>`:''}
+  <div class="row">${wrong.length?'<button class="btn ghost" id="redo">Retry only the ones I missed</button>':''}<button class="btn" id="again">Start over</button></div>`;
+  $("again").addEventListener("click",()=>start(pool()));
+  if(wrong.length)$("redo").addEventListener("click",()=>start(wrong));
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const k="abcd".indexOf(e.key.toLowerCase());
+  if(k>=0&&i<order.length&&picked===null&&k<shuf.length){answer(k);e.preventDefault()}
+});
+
+let mode="all";
+function pool(){return Q.map((_,k)=>k).filter(k=>mode==="all"||(mode==="cert")===(Q[k].t==="Cloud Practitioner style"))}
+document.querySelectorAll("#modes .btn").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.m;document.querySelectorAll("#modes .btn").forEach(x=>x.classList.toggle("on",x===b));start(pool())}));
+start(pool());
+}
+</script>
+</body>
+</html>
