@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AWS IAM Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: calm and direct, like a well-made exam; short, simple sentences.
+IDEA: a measuring instrument: a ruler with one mark per question that fills up.
+PICTURE: the question itself, with the progress ruler above it.
+COLOUR and TYPE: light aluminium, black, orange pointer; Geist 500 + Geist.
+LAYOUT: wide ruler at the top, score readout above it, question and answers in one column.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#e9eaec,#141517);--card:light-dark(#f7f7f8,#1d1f22);--ink:light-dark(#111214,#eceef1);
+--mute:light-dark(#5d6168,#9aa0a8);--line:light-dark(#c9cbcf,#33363b);--acc:#ff4f00;
+--ok:light-dark(#0f6e4c,#4cc796);--okbg:light-dark(#dff1e8,#14332a);--bad:light-dark(#b42318,#ff7a6e);--badbg:light-dark(#fbe3e0,#3a1d1a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Geist,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:820px;margin:0 auto}
+h1{font-weight:500;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--mute);margin:0}
+.read{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:28px 0 10px;flex-wrap:wrap}
+.read b{font:500 clamp(28px,4vw,40px)/1 "Geist Mono",monospace}
+.read span{color:var(--mute);font-size:15px}
+.scale{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:4px;height:34px;align-items:end}
+.tick{height:18px;background:var(--line);border-radius:2px;position:relative;transition:height .25s}
+.tick.cur{height:34px;background:var(--acc)}
+.tick.ok{background:var(--ok)}.tick.bad{background:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,3.5vw,36px);margin-top:22px}
+.tag{font-size:14px;color:var(--mute);margin:0 0 10px}
+.q{font-weight:500;font-size:clamp(21px,2.8vw,27px);line-height:1.25;margin:0 0 22px;text-wrap:balance}
+.opts{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.opt{width:100%;min-height:52px;text-align:left;font:inherit;color:inherit;background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;gap:14px;align-items:center}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.opt .k{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:500 14px "Geist Mono",monospace;color:var(--mute)}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}.opt.ok .k{border-color:var(--ok);color:var(--ok)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}.opt.bad .k{border-color:var(--bad);color:var(--bad)}
+.why{margin:20px 0 0;padding:14px 16px;border-radius:10px;background:var(--bg);display:none}
+.why.on{display:block}.why strong{display:block;margin-bottom:4px}
+.row{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.btn{min-height:46px;padding:10px 22px;border-radius:10px;font:500 16px Geist,sans-serif;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn[hidden]{display:none}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.modes .btn{min-height:40px;padding:8px 14px;font-size:15px}.modes .btn.on{background:var(--ink);color:var(--bg)}
+.hint{color:var(--mute);font-size:14px;margin:14px 0 0}
+.big{font:500 clamp(56px,10vw,96px)/1 "Geist Mono",monospace;margin:4px 0 8px}
+.bars{display:grid;gap:12px;margin:22px 0}
+.bar{display:grid;grid-template-columns:minmax(0,15em) minmax(0,1fr) 3.5em;gap:12px;align-items:center;font-size:15px}
+.bar i{display:block;height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i u{display:block;height:100%;background:var(--acc)}
+.bar em{font-style:normal;text-align:right;font-family:"Geist Mono",monospace;white-space:nowrap}
+.miss{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.miss li{border-top:1px solid var(--line);padding-top:12px}
+.miss p{margin:2px 0;color:var(--mute);font-size:15px}
+@media(max-width:600px){.bar{grid-template-columns:minmax(0,1fr) 3.5em}.bar i{grid-column:1/-1;order:3}.scale{gap:2px}.modes{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.modes .btn{min-height:40px;padding:8px 14px;font-size:15px}.modes .btn.on{background:var(--ink);color:var(--bg)}
+.hint{display:none}}
+@media(prefers-reduced-motion:reduce){.tick{transition:none}}
+</style>
+</head>
+<body>
+<main class="band"><div class="wrap">
+  <h1>Quiz: AWS IAM</h1>
+  <p class="sub">Questions about the doorman of your AWS account: users, groups, roles, keys, MFA and policies, plus questions in the style of the AWS Certified Cloud Practitioner exam.</p>
+  <div class="modes" id="modes"><button class="btn ghost on" data-m="all">All (30)</button><button class="btn ghost" data-m="course">Course (20)</button><button class="btn ghost" data-m="cert">Cloud Practitioner style (10)</button></div>
+  <div class="read"><div><span>Question</span><br><b id="pos">1/20</b></div><div style="text-align:right"><span>Correct</span><br><b id="pts">0</b></div></div>
+  <div class="scale" id="scale" aria-hidden="true"></div>
+  <section class="card" id="stage" aria-live="polite"></section>
+</div></main>
+<script>
+{
+const Q=[
+{t:"Intro to IAM",q:"What does the acronym IAM stand for?",o:["Identity and Access Management","Internet Access Monitor","Instance Access Manager","Identity Audit Module"],a:0,e:"IAM is the AWS service that decides who can get into the account and what they can do once inside."},
+{t:"Intro to IAM",q:"Showing your badge at the front desk to prove who you are. In IAM this is called…",o:["Authentication","Authorisation","Replication","Encryption"],a:0,e:"Authentication answers \"who are you?\" (password, key). Authorisation answers \"what are you allowed to do?\"."},
+{t:"Intro to IAM",q:"How much does IAM cost?",o:["It is free","You pay per user created","You pay per policy","It is free only for the first year"],a:0,e:"IAM has no cost. You only pay for the services your users use."},
+{t:"Intro to IAM",q:"In which AWS region does IAM work?",o:["It is global: it applies to the whole account","Only in the region where it was created","Only in Ireland (eu-west-1)","It must be set up in every region"],a:0,e:"Users, groups, roles and policies apply to every region of the account."},
+{t:"Users, groups and roles",q:"Ten people in finance need the same permissions. What is the best approach?",o:["Create a group, add the ten people and give the permission to the group","Give the permission to each person, one by one","Create a single user and share the password","Give everyone administrator access"],a:0,e:"Groups exist exactly for this: change the permission once and everyone in the group gets it."},
+{t:"Users, groups and roles",q:"An EC2 server needs to read files from S3. What is the safest way?",o:["Give the server a role with S3 read permission","Store a user's access key on the server","Use the root password on the server","Make the S3 bucket public"],a:0,e:"The role gives the server temporary credentials. No key is stored on it to be stolen."},
+{t:"Users, groups and roles",q:"How is a role different from a user?",o:["It has no password or fixed key: whoever uses it gets temporary credentials","It has more permissions than a user","Only root can use it","It cannot have policies"],a:0,e:"A role is like a borrowed visitor badge. Its credentials expire on their own."},
+{t:"Users, groups and roles",q:"What can you put inside an IAM group?",o:["Only users","Users and other groups","Users and roles","Any AWS resource"],a:0,e:"A group contains only users. You cannot nest a group inside another group, or put roles in it."},
+{t:"Access keys",q:"How many times does AWS show the secret access key?",o:["Only once, when the key is created","Whenever you ask","Once a day","Never, it stays on the server"],a:0,e:"If you lose the secret part there is no way to see it again. You must create a new key."},
+{t:"Access keys",q:"How many access keys can a user have at the same time?",o:["2","1","5","No limit"],a:0,e:"The limit of 2 lets you swap one key for the other without stopping anything."},
+{t:"Access keys",q:"Which CLI command answers \"who am I?\"",o:["aws sts get-caller-identity","aws iam whoami","aws configure list-users","aws iam get-me"],a:0,e:"sts get-caller-identity shows the account and the user (or role) the CLI is using."},
+{t:"MFA",q:"What is MFA?",o:["Asking for a second code besides the password, for example on your phone","A password with more than 20 characters","A backup copy of the keys","A type of policy"],a:0,e:"Even if someone steals the password, without the second code (phone or physical key) they cannot get in."},
+{t:"MFA",q:"Which account should have MFA turned on first?",o:["The root user (the account owner)","The least used user","None, MFA is optional","Only roles"],a:0,e:"Root can do everything in the account. It is the first one that needs MFA, and it should not be used day to day."},
+{t:"Policies",q:"In which format is an IAM policy written?",o:["JSON","XML","YAML","CSV"],a:0,e:"Policies are JSON documents with Effect, Action, Resource and sometimes Condition."},
+{t:"Policies",q:"Which values can a policy's Effect field have?",o:["Allow or Deny","Read or Write","True or False","Start or Stop"],a:0,e:"Allow permits, Deny blocks. Action says what; Resource says on what."},
+{t:"Policies",q:"A user with no policy at all tries to list users. What happens?",o:["Denied: by default everything is forbidden","Allowed: by default everything is open","It depends on the region","It only works in the console"],a:0,e:"IAM rule nº 1: without an Allow, the answer is always no."},
+{t:"Policies",q:"The group gives Allow for an action, but a policy on the user gives Deny for the same action. Result?",o:["Denied: an explicit Deny always wins","Allowed: the group has priority","Allowed: the Allow came first","An error, and the policy is deleted"],a:0,e:"No matter how many Allows exist: if there is an explicit Deny, the action is denied."},
+{t:"Policies",q:"Which policy type is created by AWS, ready to use, and cannot be edited?",o:["AWS managed","Customer managed","Inline","Trust policy"],a:0,e:"Examples: ReadOnlyAccess, AmazonS3ReadOnlyAccess. Customer managed policies are the ones you create and can edit."},
+{t:"Policies",q:"An inline policy is glued to a user. What happens if the user is deleted?",o:["The policy is deleted with it","It moves to root","It stays alone in the account","It becomes an AWS managed policy"],a:0,e:"An inline policy only exists inside its owner. To reuse a policy, make it customer managed."},
+{t:"Best practices",q:"A user's access key was leaked. What is the first step?",o:["Disable the key immediately","Wait and see if anyone uses it","Change the console password","Close the AWS account"],a:0,e:"Disabling cuts access right away. Then you investigate, create a new key and delete the old one."},
+{t:"Cloud Practitioner style",q:"Under the AWS shared responsibility model, who is responsible for managing IAM users and their permissions?",o:["The customer","AWS","The internet provider","AWS and the customer share it equally"],a:0,e:"AWS protects the cloud itself (data centres, hardware). Who can access what inside your account is your job."},
+{t:"Cloud Practitioner style",q:"Which of these tasks can ONLY be done while signed in as the root user?",o:["Changing the account's AWS Support plan","Creating an IAM user","Launching an EC2 instance","Creating an S3 bucket"],a:0,e:"A few tasks need root, like changing the support plan or closing the account. Everything else should be done with IAM users or roles."},
+{t:"Cloud Practitioner style",q:"A developer needs to call AWS from a script on their laptop. What do they need?",o:["An access key ID and secret access key","A console password","An MFA device only","A key pair for EC2 (SSH key)"],a:0,e:"Programmatic access (CLI, SDK, scripts) uses access keys. The console password is for the website."},
+{t:"Cloud Practitioner style",q:"Which principle says users should get only the permissions they need to do their job?",o:["Least privilege","High availability","Elasticity","Pay as you go"],a:0,e:"Least privilege is a core security best practice in AWS and comes up often in the exam."},
+{t:"Cloud Practitioner style",q:"Which IAM feature lists all users and the status of their passwords, access keys and MFA?",o:["Credential report","AWS Cost Explorer","Amazon Inspector","AWS Trusted Advisor"],a:0,e:"The credential report is a downloadable file with every user and the state of their credentials."},
+{t:"Cloud Practitioner style",q:"Which service records who did what in the account, for example who deleted an IAM user?",o:["AWS CloudTrail","Amazon CloudWatch","AWS Config","IAM Access Analyzer"],a:0,e:"CloudTrail records API calls: who, what, when and from where. CloudWatch is mainly for metrics and logs from your applications."},
+{t:"Cloud Practitioner style",q:"A company wants employees to sign in once and reach several AWS accounts. Which service fits best?",o:["AWS IAM Identity Center","Amazon Cognito","AWS Shield","AWS Secrets Manager"],a:0,e:"IAM Identity Center (formerly AWS SSO) gives workforce users one sign-in for many accounts. Cognito is for users of your own apps."},
+{t:"Cloud Practitioner style",q:"Which service gives the temporary credentials used when someone assumes a role?",o:["AWS Security Token Service (STS)","AWS Key Management Service (KMS)","AWS Certificate Manager","Amazon GuardDuty"],a:0,e:"STS issues short-lived credentials. That is why the \"who am I?\" command is sts get-caller-identity."},
+{t:"Cloud Practitioner style",q:"How can an administrator force all IAM users to use long passwords with numbers and symbols?",o:["Set an IAM password policy for the account","Turn on MFA for root","Create a new group","Use AWS Shield Advanced"],a:0,e:"The account password policy sets rules such as minimum length, required characters and expiry."},
+{t:"Cloud Practitioner style",q:"Which tool helps find resources, such as S3 buckets or roles, that are shared with someone outside your account?",o:["IAM Access Analyzer","AWS Budgets","Amazon Macie","AWS Artifact"],a:0,e:"IAM Access Analyzer looks for outside access and also checks your policies for mistakes, like in the notebook."},
+];
+const S=[...new Set(Q.map(x=>x.t))];
+const $=id=>document.getElementById(id);
+const stage=$("stage"),scale=$("scale");
+let order,i,res,picked,shuf;
+
+function shuffle(a){a=[...a];for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+
+function start(list){order=list;i=0;res={};render()}
+
+function drawScale(){
+  scale.style.gridTemplateColumns=`repeat(${order.length},minmax(0,1fr))`;
+  scale.innerHTML=order.map((n,k)=>`<div class="tick ${k===i&&i<order.length?'cur':''} ${res[n]===true?'ok':res[n]===false?'bad':''}"></div>`).join('');
+  $("pos").textContent=`${Math.min(i+1,order.length)}/${order.length}`;
+  $("pts").textContent=Object.values(res).filter(Boolean).length;
+}
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function render(){
+  drawScale();
+  if(i>=order.length)return finish();
+  const n=order[i],x=Q[n];picked=null;
+  shuf=shuffle(x.o.map((t,k)=>({t,k})));
+  stage.innerHTML=`<p class="tag">${esc(x.t)}</p>
+  <h2 class="q">${esc(x.q)}</h2>
+  <ul class="opts">${shuf.map((o,k)=>`<li><button class="opt" data-k="${k}"><span class="k">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button></li>`).join('')}</ul>
+  <div class="why" id="why"></div>
+  <div class="row"><button class="btn" id="next" hidden>${i===order.length-1?'See result':'Next'}</button></div>
+  <p class="hint">Shortcuts: press A, B, C or D to answer and Enter to continue.</p>`;
+  stage.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answer(+b.dataset.k)));
+  $("next").addEventListener("click",()=>{i++;render();stage.querySelector(".opt,.btn")?.focus()});
+}
+
+function answer(k){
+  if(picked!==null)return;picked=k;
+  const n=order[i],x=Q[n],right=shuf[k].k===x.a;res[n]=right;
+  stage.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(shuf[j].k===x.a)b.classList.add("ok");else if(j===k)b.classList.add("bad")});
+  const w=$("why");w.innerHTML=`<strong>${right?"Correct!":"Not this time."}</strong>${esc(x.e)}`;w.classList.add("on");
+  const nx=$("next");nx.hidden=false;nx.focus();
+  drawScale();
+}
+
+function finish(){
+  const tot=order.length,ok=Object.values(res).filter(Boolean).length,pct=Math.round(ok/tot*100);
+  const msg=pct>=90?"Excellent! You have IAM nailed.":pct>=70?"Very good. Just review the ones you missed.":pct>=50?"Good start. Re-read the parts you got wrong.":"Room to improve. Review the material and try again.";
+  const wrong=order.filter(n=>res[n]===false);
+  const bars=S.map(s=>{const qs=order.filter(n=>Q[n].t===s);if(!qs.length)return'';const c=qs.filter(n=>res[n]).length;
+    return `<div class="bar"><span>${s}</span><i><u style="width:${c/qs.length*100}%"></u></i><em>${c}/${qs.length}</em></div>`}).join('');
+  stage.innerHTML=`<p class="tag">Result</p>
+  <div class="big">${ok}/${tot}</div><p style="margin:0">${msg}</p>
+  <div class="bars">${bars}</div>
+  ${wrong.length?`<h2 class="q" style="font-size:20px;margin:24px 0 4px">Right answers for the ones you missed</h2>
+  <ul class="miss">${wrong.map(n=>`<li><strong>${esc(Q[n].q)}</strong><p>Answer: ${esc(Q[n].o[Q[n].a])}</p><p>${esc(Q[n].e)}</p></li>`).join('')}</ul>`:''}
+  <div class="row">${wrong.length?'<button class="btn ghost" id="redo">Retry only the ones I missed</button>':''}<button class="btn" id="again">Start over</button></div>`;
+  $("again").addEventListener("click",()=>start(pool()));
+  if(wrong.length)$("redo").addEventListener("click",()=>start(wrong));
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const k="abcd".indexOf(e.key.toLowerCase());
+  if(k>=0&&i<order.length&&picked===null&&k<shuf.length){answer(k);e.preventDefault()}
+});
+
+let mode="all";
+function pool(){return Q.map((_,k)=>k).filter(k=>mode==="all"||(mode==="cert")===(Q[k].t==="Cloud Practitioner style"))}
+document.querySelectorAll("#modes .btn").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.m;document.querySelectorAll("#modes .btn").forEach(x=>x.classList.toggle("on",x===b));start(pool())}));
+start(pool());
+}
+</script>
+</body>
+</html>
